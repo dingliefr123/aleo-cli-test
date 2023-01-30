@@ -1,3 +1,4 @@
+import { isvalidArray } from '.';
 import { CliInputType, CommandEnum } from '../src/typing';
 
 /**
@@ -7,16 +8,14 @@ import { CliInputType, CommandEnum } from '../src/typing';
  * Then its length must be latger than 2
  * Finally, the third(argv[2]) element be either '--filter=aa' or '--count' 
 */
-
-
 export function isValidParameter(input: unknown): input is CliInputType {
   // 1. Check if it is a valid array
-  if (!input || !Array.isArray(input))
+  if (!isvalidArray(input))
     return false;
   // 2. Its length must be larger than 2
 	if (input.length < 3)
 		return false;
-	// 3. the third(argv[2]) element be either '--filter=aa' or '--count'
+	// 3. the third(argv[2]) element be either '--help', '--filter=aa' or '--count'
 	const [ ,,commandStr ] = input as string[];
   if (!commandStr || !commandStr.startsWith('--'))
     return false;

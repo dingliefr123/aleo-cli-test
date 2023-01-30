@@ -1,6 +1,7 @@
 import { CommandEnum } from './typing';
 import { argv } from 'process';
 import {
+  isvalidArray,
   isValidParameter,
   logError
 } from '../utils';
@@ -8,8 +9,11 @@ import {
   INPUT_ERROR_EN,
   INPUT_ERROR_FR,
   HELP_MESSAGE_EN,
-  HELP_MESSAGE_FR
+  HELP_MESSAGE_FR,
+  NONE_FOUND_MSG
 } from './consts';
+import { count, filter } from './filterAndCount';
+import { logFormattedInJSON } from '../utils/customizedLog';
 
 /**
  * Based on 3 different commands to execute
@@ -17,14 +21,22 @@ import {
 function execute(command: CommandEnum) {
   switch(command) {
     case CommandEnum.COUNT:
-      break;
-    case CommandEnum.FILTER:
+      logFormattedInJSON(count());
       break;
     case CommandEnum.HELP:
       console.log([ HELP_MESSAGE_EN, HELP_MESSAGE_FR ].join('\n'));
       break;
-    default:
-      throw new Error('Could not find corresponding handler');
+    default: {
+      const [ key , pattern ] = command.split('=');
+      if (key === CommandEnum.FILTER) {
+        const res = filter(pattern);
+        isvalidArray(res) ?
+          logFormattedInJSON(res) :
+          console.log(NONE_FOUND_MSG);
+      }
+      else
+        throw new Error('Could not find corresponding handler');
+    }
   }
 }
 
